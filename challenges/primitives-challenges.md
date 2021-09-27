@@ -4,9 +4,6 @@
 
 ## JavaScript interview code challenges on Primitives - challenges
 
-1. [Swap 2 integers present in variables num1 and num2 without using temporary variable](#Q1)
-1. [Write a function which returns true if given value of number is an integer without using any inbuilt functions](#Q2)
-1. [Create a function which returns a random number in the given range of values both inclusive](#Q3)
 1. [Write a program to reverse a string](#Q4)
 1. [Write a program to reverse a string by words. Also show the reverse of each words in place](#Q5)
 1. [Write a program to reverse a given integer number](#Q6)
@@ -24,68 +21,6 @@
 1. [Write a function which accepts two valid dates and returns the difference between them as number of days](#Q18)
 
 ---
-
-#### Q1
-### Swap 2 integers present in variables num1 and num2 without using temporary variable
-
-- The swapping of 2 variables is possible with simple Destructuring assignment using array
-- Traditional approach of swapping by using the given variables is also achievable
-
-```js
-let num1 = 10, num2 = 20;
-[num1, num2] = [num2, num1];
-```
-
-```js
-let num1 = 10, num2 = 20;
-num1 = num1 + num2;
-num2 = num1 - num2;
-num1 = num1 - num2;
-```
-
-###### Notes
-2nd solution can fail due to overflow of number range if the numbers are very big
-
-<br />
-
-#### Q2
-### Write a function which returns true if given value of number is an integer without using any inbuilt functions
-```js
-// Example
-isInt(4.0);        // true
-isInt(12.2);       // false
-isInt(0.3);        // false 
-```
-- Modulo operator can be used to check if there is a remainder left when divided by 1
-
-```js
-function isInt(value){
-    return value % 1 === 0;
-}
-```
-
-<br />
-
-#### Q3
-### Create a function which returns a random number in the given range of values both inclusive
-
-- `Math.random` function returns a floating-point, pseudo-random number between 0 (inclusive) and 1 (exclusive)
-
-```js
-function randomNumberGeneratorInRange(rangeStart, rangeEnd){
-    return rangeStart + Math.round(Math.random() * (rangeEnd - rangeStart));
-}
-
-randomNumberGeneratorInRange(10, 50);           // 12
-```
-
-###### Notes
-Usage of `Math.round` depends on the logic used to accomplish the requirement
-
-###### References
-- https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
-
-<br />
 
 #### Q4
 ### Write a program to reverse a string
