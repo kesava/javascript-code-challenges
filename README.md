@@ -5,6 +5,8 @@
 
 ---
 
+The questions are from fork, but I have attempted my own solutions.
+
 ## JavaScript Modern Interview Code Challenges by topic
 
 - Primitives
