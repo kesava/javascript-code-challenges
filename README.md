@@ -11,7 +11,6 @@ The questions are from fork, but I have attempted my own solutions.
 
 - Primitives
 
-  - [Concepts](./challenges/primitives-concepts.md#home)
   - [Challenges](./challenges/primitives-challenges.md#home)
 
 - Functions
