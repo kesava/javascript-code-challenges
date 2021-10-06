@@ -27,7 +27,25 @@
 #### Q1
 ### Design a Calulator interface for 2 number inputs which can perform sum, difference, product and dividend whenever invoked on the same interface
 ```js
-// Example
+function Calculator(num1, num2) {
+  return {
+    sum() {
+      return num1 + num2;
+    },
+    difference() {
+      return num1 - num2;
+    },
+    product() {
+      return num1 * num2;
+    },
+    dividend() {
+      return Math.floor(num1 / num2);
+    }
+  }
+}
+```
+Examples
+```js
 const calc12And5 = Calculator(12, 5);
 calc12And5.sum();                       // 17
 calc12And5.difference();                // 7
@@ -35,36 +53,8 @@ calc12And5.product();                   // 60
 calc12And5.dividend();                  // 2
 ```
 
-- Simple revealing module pattern can be used which receives inputs and executes different operations exposed through functions
-
-```js
-function Calulator(num1, num2){
-
-    function sum(){ 
-        return num1 + num2; 
-    }
-    
-    function difference(){ 
-        return num1 - num2; 
-    }
-    
-    function product(){ 
-        return num1 * num2; 
-    }
-    
-    function dividend(){ 
-        return Math.floor(num1 / num2); 
-    }
-
-    return { sum, difference, product, dividend };
-}
-```
-
 ###### Notes
-The solution provided is one of the way to achieve the interface. The design and solution can vary 
-
-###### References
-- https://eloquentjavascript.net/10_modules.html
+The function closes over the arguments `num1` and `num2`. 
 
 <br />
 
@@ -73,12 +63,12 @@ The solution provided is one of the way to achieve the interface. The design and
 
 ```js
 function privateCounter(){
-    var count = 0;
+    let count = 0;
     return {
-        increment: function(val = 1){
+        increment(val = 1){
             count += val;
-        }
-        retrieve: function(){
+        },
+        retrieve(){
             return count;
         }
     }
@@ -95,10 +85,7 @@ counter.retrieve();             // 8
 ```
 
 ###### Notes
-'increment' function takes an argument to increment if passed else which is set to 1 (increments by 1)
-
-###### References
-- https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures
+The function closes over `count` and makes it inaccessible outside the function.
 
 <br />
 
