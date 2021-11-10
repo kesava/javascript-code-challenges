@@ -7,7 +7,6 @@
 1. [Design a Calulator interface for 2 number inputs which can perform sum, difference, product and dividend whenever invoked on the same interface](#Q1)
 1. [Design a private counter function which exposes increment and retrive functionalities](#Q2)
 1. [Write a polyfill for bind function](#Q3)
-1. [Write a function which will create a function bounded to the context like `bind`, but can be overridden when the context is set explicitly](#Q4)
 1. [Write a function which helps to achieve multiply(a)(b) and returns product of a and b](#Q5)
 1. [Create a function which takes another function as an argument and makes it eligible for currying or partial application](#Q6)
 1. [Design a function which helps to do debouncing](#Q7)
@@ -120,20 +119,35 @@ The function closes over `count` and makes it inaccessible outside the function.
 ### Write a polyfill for bind function
 
 - The `bind` method creates a new function that, when called, has its this keyword set to the provided context
-
+We are going to write `bind` in terms of `apply`.
 ```js
 if(!Function.prototype.bind){
     Function.prototype.bind = function(context){
         var fn = this;
-        var fnArgs = Array.prototype.slice.call(arguments, 1);
 
         return function(){
-            var allArgs = fnArgs.concat(Array.prototype.slice.call(arguments))
+            var allArgs = Array.prototype.slice.call(arguments);
             fn.apply(context, allArgs);
         };
     }
 }
 ```
+
+But `bind` takes in both `context` as well as `args`. So we are going to modify it slightly.
+```js
+if(!Function.prototype.bind){
+    Function.prototype.bind = function(context){
+        var fn = this;
+        var bindArgs = Array.prototype.slice.call(arguments, 1); // exclude context and get the rest of the args for bind
+
+        return function(){
+            var allArgs = bindArgs.concat(Array.prototype.slice.call(arguments)); 
+            fn.apply(context, allArgs);
+        };
+    }
+}
+```
+
 
 ###### Notes
 This is a simple polyfill for bind without handling corner cases. It does not work when using the new operator
@@ -143,33 +157,6 @@ This is a simple polyfill for bind without handling corner cases. It does not wo
 
 <br />
 
-#### Q4
-### Write a function which will create a function bounded to the context like `bind`, but can be overridden when the context is set explicitly
-
-- The functionality is similar to `bind` with exception that if there is a context set during the execution it will override
-
-```js
-function softBind(fn, context) {
-    var fnArgs = Array.prototype.slice.call(arguments, 2);
-
-    return function() {
-        var allArgs = fnArgs.concat(Array.prototype.slice.call(arguments));
-        
-        // override the context to incoming context if it is not undefined, null or window
-        var finalContext = (!this || this === window) ? context : this;
-        fn.apply(finalContext, allArgs);
-    };
-}
-```
-
-###### Notes
-This functionality is also known as 'Soft Binding'
-
-###### References
-- https://github.com/getify/You-Dont-Know-JS/blob/1st-ed/this%20%26%20object%20prototypes/ch2.md#softening-binding
-- https://gist.github.com/getify/9043478
-
-<br />
 
 #### Q5
 ### Write a function which helps to achieve multiply(a)(b) and returns product of a and b
@@ -201,12 +188,15 @@ function multiply(num1){
 - The arguments can be 1 or multiple, and the actual function will be called once the count of expected arguments are reached
 
 ```js
-function curryFunc(fn) {
+function currize(fn) {
     return function curry(...args) {
+        // fn.length would be compile time length of input fn
+        // args.length would be the run time length of the curried fn
         if (fn.length <= args.length) {
             return fn.apply(this, args);
         } else {
             return function (...args2) {
+                // call recursively till we fully construct the original list of parameters of the input fn
                 return curry.apply(this, args.concat(args2));
             };
         }
@@ -214,7 +204,7 @@ function curryFunc(fn) {
 }
 
 // driver code
-let sum = curryFunc(function (a, b, c, d) {
+let sum = currize(function (a, b, c, d) {
     return a + b + c + d;
 });
 
@@ -235,23 +225,22 @@ sum(1,2)(3,4);                      // called like partial application
 - Debounce function design can take function (to be debounced), delay and the optional context
 
 ```js
-function debounce(fn, delay, context){
-    let timer;
-
-    return function(...args){
-        if(timer) clearTimeout(timer);
-        
-        context = this ?? context;
-        timer = setTimeout(()=>{
-            fn.apply(context, args);
-        }
-        , delay);
-    }
+function debounce(fn, delay, context) {
+  let timer;
+  
+  return function(...args) {
+    if (timer) clearTimeout(timer);
+    context = this ? this : context;
+    timer = setTimeout(() => {
+      fn.apply(context, args);
+    }, delay);
+  }
 }
 ```
 
 ###### Notes
-Context is replaced while debounce function call in presence of a context. If not, context set during the `debounce` function call is used.
+* This is a trailing debounce, the function is executed at the end of the delay period.
+* Context is replaced while debounce function call in presence of a context. If not, context set during the `debounce` function call is used.
 
 ###### References
 - https://www.youtube.com/watch?v=Zo-6_qx8uxg
