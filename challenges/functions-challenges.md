@@ -28,7 +28,7 @@
 ### Design a Calulator interface for 2 number inputs which can perform sum, difference, product and dividend whenever invoked on the same interface
 ```js
 function Calculator(num1, num2) {
-  return {
+  const supportedMethods = {
     sum() {
       return num1 + num2;
     },
@@ -42,6 +42,29 @@ function Calculator(num1, num2) {
       return Math.floor(num1 / num2);
     }
   }
+  
+  // We want to throw an error message for any other method invoked on Calculator.
+  const handler = {
+    get: function(target, prop, recvr) {
+      // First we check if the prop exists 
+      if (Reflect.has(supportedMethods, prop)) {
+        // HERE comes the tricky part. Proxy supports invoking an object member, but not a method.
+        // So we have to define a new function, and define a proxy around it so, you can invoke a function on it.
+        const F = function(...args) {
+          return Reflect.apply(Reflect.get(supportedMethods, prop), undefined, args);
+        }
+        return new Proxy(F, {
+          apply: function(target) {
+            return target.apply();
+          }
+        })
+        
+      } else {
+        throw `The invoked method - "${prop}" is not supported. The only supported methods are: ${Reflect.ownKeys(supportedMethods).join(", ")}.`
+      }
+    }
+  }
+  return new Proxy(supportedMethods, handler);
 }
 ```
 Examples
@@ -51,6 +74,9 @@ calc12And5.sum();                       // 17
 calc12And5.difference();                // 7
 calc12And5.product();                   // 60
 calc12And5.dividend();                  // 2
+
+calc12And5.square();
+// The invoked method - "square" is not supported. The only supported methods are: sum, difference, product, dividend.
 ```
 
 ###### Notes
