@@ -364,34 +364,31 @@ oSi.getInstance() === oSi.getInstance() // true
 ### Design a function with toggle functionality for given list of inputs where toggle function accepts list of values to be toggled upon
 ```js
 // Example
-var hello = toggle("hello");
-var onOff = toggle("on","off");
-var speed = toggle("slow","medium","fast");
+const s1 = stateMachineMaker("on", "off");
+s1.toggle() // "on"
+s1.toggle() // "off"
+s1.toggle() // "on"
 
-hello();      // "hello"
-hello();      // "hello"
-
-onOff();      // "on"
-onOff();      // "off"
-onOff();      // "on"
-
-speed();      // "slow"
-speed();      // "medium"
-speed();      // "fast"
-speed();      // "slow"
+const s2 = stateMachineMaker("red", "yellow", "green");
+s2.toggle() // "red"
+s2.toggle() // "yellow"
+s2.toggle() // "green"
+s2.toggle() // "red"
 ```
 
 - Toggle functionality can be obtained by returning the next value cyclically on each call to the function
 - The toggle function will return another function which maintains the closure over the values with which it was initialized
 
 ```js
-function toggle(...values){
-    let state = -1;
-    const length = values.length;
-    return function(){
-        state = (state + 1) % length;
-        return values[state];
+const stateMachineMaker = function(...args) {
+  let possibleStates = args;
+  let current = -1;
+  return {
+    toggle() {
+      current = (current + 1) % possibleStates.length;
+      return possibleStates[current];
     }
+  }
 }
 ```
 
@@ -419,12 +416,9 @@ function range(start, end) {
             return range(start, end);
         };
     }
-
-    const arr = [];
-    for (let i = start; i <= end; i++) {
-        arr.push(i);
-    }
-    return arr;
+    const size = end - start;
+    return [...Array(size).keys()].map(i => i + start);
+  ;
 }
 ```
 
