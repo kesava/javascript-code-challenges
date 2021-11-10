@@ -15,7 +15,6 @@ The questions are from fork, but I have attempted my own solutions.
 
 - Functions
 
-  - [Concepts](./challenges/functions-concepts.md#home)
   - [Challenges](./challenges/functions-challenges.md#home)
 
 - Objects
