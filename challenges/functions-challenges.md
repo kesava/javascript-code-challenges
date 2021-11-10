@@ -296,13 +296,25 @@ function sampler(fn, count, context){
     return function(...args){
         lastArgs = args;
         context = this ?? context;
-        
-        if(++counter !== count) return;
-        
-        fn.apply(context, args);
-        counter = 0;
+        counter++;
+        if (counter < count) {
+          return;
+        } else {
+          fn.apply(context, args);
+          counter = 0;
+        }
     };
 }
+```
+
+```
+// driver
+const f = sampler(() => { console.log("hello")}, 5, window);
+f()
+f()
+f()
+f()
+f() // only this one should print "hello"
 ```
 
 ###### Notes
@@ -320,31 +332,28 @@ Sampling is different from throttling in the way that sampling limits the execut
 - When requested multiple times, same object is returned
 
 ```js
-var Singleton = (function () {
-    var instance;
- 
-    function createInstance() {
-        var object = new Object("I am the instance");
-        return object;
+const SingletonMaker = function(obj) {
+  let instance;
+  
+  function createInstance() {
+    if (instance) {
+      return instance;
+    } else {
+      instance = obj;
     }
- 
-    return {
-        getInstance: function () {
-            if (!instance) {
-                instance = createInstance();
-            }
-            return instance;
-        }
-    };
-})();
+  }
+  
+  return {
+    getInstance() {
+      createInstance();
+      return instance;
+    }
+  }
+}
 
-// driver code
-const instance1 = Singleton.getInstance();
-const instance2 = Singleton.getInstance();
+const oSi = SingletonMaker({a: 1});
+oSi.getInstance() === oSi.getInstance() // true
 ```
-
-###### Notes
-Here both 'instance1' and 'instace2' are referencing to the same object
 
 ###### References
 - https://www.dofactory.com/javascript/design-patterns/singleton
