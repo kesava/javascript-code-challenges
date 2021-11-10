@@ -80,7 +80,8 @@ calc12And5.square();
 ```
 
 ###### Notes
-The function closes over the arguments `num1` and `num2`. 
+* The function closes over the arguments `num1` and `num2`. 
+* This is a pretty advanced usecase of `Proxy` handler.
 
 <br />
 
