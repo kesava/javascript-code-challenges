@@ -456,21 +456,41 @@ Symbol is used to maintain the private variable in the object.
 - 'push' and 'pop' functions can be added to the object which internally calls the Array methods `push` and `pop` by passing the object context
 
 ```js
-const arrayLikeObject = {
-    length: 0,
-    push: function (item) {
-        Array.prototype.push.call(this, item);
-    },
-    pop: function () {
-        Array.prototype.pop.call(this);
+function makeArrayLikeObj() {
+    const retObj = {};
+    let idx = 0;
+    return {
+      length: () => idx,
+      push(elem) {
+        retObj[idx++] = elem;
+        console.log({ retObj })
+        return this;
+      },
+      pop() {
+        const temp = retObj[String(--idx)];
+        Reflect.deleteProperty(retObj, String(idx))
+        console.log({ retObj, temp });
+        return temp;
+      },
+     *[Symbol.iterator]() {
+       let index = 0;
+        while (index < Object.keys(retObj).length) {
+          yield retObj[String(index)];
+          index++;
+        }
+      },
     }
-};
+}
+
 
 // driver code
-arrayLikeObject.push('first');
-arrayLikeObject.push('second');
-arrayLikeObject.pop();
-arrayLikeObject;                                // { length: 1, 0: first } 
+const arr = makeArrayLikeObj();
+arr.push(2).push(8).push(80)
+arr.pop() // pops 80
+for(let i of arr) {
+  console.log(i) // 2, 8
+} 
+[...arr] // [2, 8]                             // { length: 1, 0: first } 
 ```
 
 ###### Notes
