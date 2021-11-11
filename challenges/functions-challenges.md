@@ -552,23 +552,18 @@ In the code value is checked if it is undefined reason being 0 is a falsy value 
 - `apply` keyword in proxy can be used to achieve the functionality without modifying the existing function code
 
 ```js
-function generateSecretObject(key, value) {
-    return { [key]: value };
+function logFnCall(fn) {
+  const fnName = fn.name ?? 'anonymous fn';
+  return new Proxy(fn, {
+    apply: function(target, thisArg, argList) {
+      console.log(`Function '${fnName}' invoked with [${argList.join(", ")}]`);
+      return Reflect.apply(fn, thisArg, argList);
+    }
+  });
 }
-
-generateSecretObject = new Proxy(generateSecretObject, {
-    apply(target, context, args) {
-        console.log(`${target.name} function is accessed at ${new Date()}`);
-        return target.apply(context, args);
-    },
-});
-
-// driver code
-const user = {
-    username: "0001",
-    generateSecretObject
-};
-generateSecretObject("username", "Password");               // "generateSecretObject function is accessed at {time}"
+const sum = (a,b) => a + b;
+logFnCall(sum)(1,2) // 3
+// "Function 'sum' invoked with [1, 2]"
 ```
 
 ###### Notes
