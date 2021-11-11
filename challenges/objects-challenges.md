@@ -407,31 +407,41 @@ Order of calling the functions does not matter as all the functions are returnin
 #### Q9
 ### Create an object with property counter which keeps incrementing on every access
 ```js
-const obj = counterObject();
-obj.counter;                    // 1
-obj.counter;                    // 2
-obj.counter;                    // 3
+let o1 = makeObjCounter({ a: 1, b: 2}, 'b');
+let o2 = makeObjCounter({ a: 1, b: 2}, 'b');
+
+o1.b
+o2.b
+o1.b
+o2.b
+o1.b
+
+// { key: 'b', count: 1 }
+// { key: 'b', count: 1 }
+// { key: 'b', count: 2 }
+// { key: 'b', count: 2 }
+// { key: 'b', count: 3 }
 ```
 
 - The access to the property of the object can be configured through property `getter`
 - A separate private variable can be maintained track the value and getter on each access to increment and return the value
 
 ```js
-function counterObject() {
-    const symCounter = Symbol('counter');
-
-    const obj = {
-        [symCounter]: 0,
-
-        get counter() {
-            return ++this[symCounter];
-        },
-
-        set counter(value) {
-            throw new Error('Cannot set the counter');
-        },
-    };
-    return obj;
+function makeObjCounter(obj, key) {
+  const counterTable = new Map();
+  const lookupKey = Symbol(key);
+  let count = counterTable.get(lookupKey) || 0;
+  
+  const handler = {
+    get: function(target, prop, recvr) {
+      if (prop === key) {
+        counterTable.set(lookupKey, ++count);
+        console.log({ key, count });
+        return target[key];
+      }
+    }
+  }
+  return new Proxy(obj, handler);
 }
 ```
 
