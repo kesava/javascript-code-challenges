@@ -477,48 +477,22 @@ sum(4)(-10, -6);         // -12
 sum(6, -3, 1);           // 4
 ```
 
-- Sum functionality can be obtained by returning the sum when all the arguments are present
-- The cases when only 1 or 2 arguments are passed need to be managed and handled
-
 ```js
-function sum(a, b, c){
-    if(a !== undefined && b !== undefined && c !== undefined){
-        return a + b + c;
-    }
-    if(a !== undefined && b !== undefined){
-        return function(c){
-            return sum(a, b, c);
-        }
-    }
-    return function(b, c){
-        if(b !== undefined && c !== undefined){
-            return sum(a, b, c);
-        }
-        return function(c){
-            return sum(a, b, c);
-        }
-    }
-}
-```
-
-```js
-const countOfValues = 3;
-
-function sum() {
+function makeCurryUpto(fn, maxArgCount) {
+  return function curried() {
     const args = arguments;
-
-    if (args.length === countOfValues) {
-        return Array.prototype.reduce.call(args, (a, b) => a + b);
+    if (args.length === maxArgCount) {
+      return Array.prototype.reduce.call(args, fn);
+    } else {
+      return function() {
+        return curried(...args, ...arguments);
+      }
     }
-
-    return function () {
-        return sum(...args, ...arguments);
-    };
+  }
 }
-```
 
-###### Notes
-2nd approach is generic technique and can be used customized for any number of values
+const sum = makeCurryUpto((a,b) => a + b, 3);
+```
 
 <br />
 
