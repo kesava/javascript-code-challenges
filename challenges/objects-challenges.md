@@ -286,22 +286,25 @@ obj.marks = 2 // { marks: 2]
 - Property accessor `writable` to `false` sets the property to be read only
 
 ```js
-function userObjectCreator(id){
-    const obj = { };
-
-    Object.defineProperty(obj, 'userid', {
-        value: id,
-        writable: false
-    });
-
-    return obj;
+const object1 = {};
+function defineSetOnce(obj, key, val) {
+  Object.defineProperty(obj, key, {
+    value: val,
+    writable: false,
+  });
+  return obj;
 }
 
-const obj = userObjectCreator(1);
+// driver code
+const o1 = defineSetOnce(object1, 'k1', 9);
+o1.k1 = 22;
+o1.k1 // 9
+o1.k1 = 2
+o1.k1 // 9
 ```
 
 ###### Notes
-`obj.id` is a ready only property and does not allow overwriting
+`obj.k1` is a ready only property and does not allow overwriting
 
 <br />
 
@@ -312,19 +315,21 @@ const obj = userObjectCreator(1);
 
 ```js
 function makeIterator(array) {
-    let nextIndex = 0;
-    return {
-        next: function () {
-            return nextIndex < array.length
-                ? {
-                      value: array[nextIndex++],
-                      done: false,
-                  }
-                : {
-                      done: true,
-                  };
-        },
-    };
+  let index = 0;
+  return {
+    next() {
+      if (array.length === index) {
+        return {
+          done: true,
+        }
+      } else {
+        return {
+          done: false,
+          value: array[index++],
+        }
+      }
+    }
+  }
 }
 
 // driver code
