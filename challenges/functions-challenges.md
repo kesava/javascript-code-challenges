@@ -578,34 +578,50 @@ This technique is helpful in logging or managing the data being passed to & retu
 - List of subscribers can be maintained in an array and can be invoked in loop on each publish
 
 ```js
-function pubSub() {
-    const subscribers = [];
-
-    function publish(data) {
-        subscribers.forEach(subscriber => subscriber(data));
+const SimplePubSub = (() => {
+  const subscribers = new Map();
+  
+  function subscribe(eventName, callback) {
+    if (subscribers.get(eventName)) {
+      const currentSubs = subscribers.get(eventName);
+      currentSubs.push(callback)
+      subscribers.set(eventName, currentSubs);
+    } else {
+      subscribers.set(eventName, [callback]);
     }
-
-    function subscribe(fn) {
-        subscribers.push(fn);
+  }
+  function publish(eventName, ...args) {
+    if (subscribers.get(eventName)) {
+      subscribers.get(eventName).forEach(subscriber => subscriber.apply(null, args))
+    } else {
+      console.error(`No Subscribers for ${eventName} yet.`);
     }
+  }
+  
+  return {
+    subscribe,
+    publish,
+  }
+})();
 
-    return {
-        publish,
-        subscribe,
-    };
-}
 
-// driver code
-const pubSubObj = pubSub();
-pubSubObj.subscribe(data => {
+SimplePubSub.subscribe('evt1', data => {
     console.log('Subscriber 1: ' + data);
 });
-pubSubObj.subscribe(data => {
+SimplePubSub.subscribe('evt1', data => {
     console.log('Subscriber 2: ' + data);
+});
+SimplePubSub.subscribe('addeve', (a, b) => {
+    console.log(`Subscriber 3: ${a + b}`);
 });
 
 // all subscribers will be called with the data on publish
-pubSubObj.publish('Value is 10');
+SimplePubSub.publish('evt1', 'Value is 10');
+SimplePubSub.publish('addeve', 13, 20);
+
+// 'Subscriber 1: Value is 10'
+// 'Subscriber 2: Value is 10'
+// 'Subscriber 3: 33'
 ```
 
 ###### Notes
