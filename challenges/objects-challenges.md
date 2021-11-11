@@ -108,6 +108,7 @@ const shallowCopy3 = obj => JSON.parse(JSON.stringify(obj)); // Not really deep 
 ```
 
 ```js
+// Mutually recursive functions to deepCopy
 function cloneArray(arr) {
   let retArr = [];
   for(let mem in arr) {
