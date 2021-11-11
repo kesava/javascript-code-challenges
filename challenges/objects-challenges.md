@@ -423,8 +423,7 @@ o1.b
 // { key: 'b', count: 3 }
 ```
 
-- The access to the property of the object can be configured through property `getter`
-- A separate private variable can be maintained track the value and getter on each access to increment and return the value
+- The access to the property of the object can be configured through `Proxy`
 
 ```js
 function makeObjCounter(obj, key) {
@@ -446,7 +445,7 @@ function makeObjCounter(obj, key) {
 ```
 
 ###### Notes
-Symbol is used to maintain the private variable in the object. Using the private variable to store the data such as `_counter` is also a well known pattern before symbols
+Symbol is used to maintain the private variable in the object.
 
 <br />
 
