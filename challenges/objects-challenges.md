@@ -459,8 +459,16 @@ Symbol is used to maintain the private variable in the object.
 function makeArrayLikeObj() {
     const retObj = {};
     let idx = 0;
-    return {
-      length: () => idx,
+    const handler = {
+      get: function(target, prop, recvr) {
+        if (prop === 'length') {
+          return idx;
+        } else {
+          return target[prop];
+        }
+      }
+    };
+    return new Proxy({
       push(elem) {
         retObj[idx++] = elem;
         console.log({ retObj })
@@ -479,14 +487,16 @@ function makeArrayLikeObj() {
           index++;
         }
       },
-    }
+    }, handler);
 }
 
 
 // driver code
 const arr = makeArrayLikeObj();
 arr.push(2).push(8).push(80)
+arr.length // 3
 arr.pop() // pops 80
+arr.length // 2
 for(let i of arr) {
   console.log(i) // 2, 8
 } 
