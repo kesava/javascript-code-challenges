@@ -333,10 +333,18 @@ function makeIterator(array) {
 }
 
 // driver code
-let it = makeIterator(['yo', 'ya']);
-it.next().value;                        // 'yo'
-it.next().value;                        // 'ya'
-it.next().done;                         // true
+const it = makeIterator([3, 4, 5]);
+it.next()
+it.next()
+it.next()
+it.next()
+it.next()
+
+// { done: false, value: 3 }
+// { done: false, value: 4 }
+// { done: false, value: 5 }
+// { done: true }
+// { done: true }
 ```
 
 ###### References
@@ -350,32 +358,42 @@ it.next().done;                         // true
 - For achieving chaining functionality, each function can return the calling context itself so that context is retained
 
 ```js
-var obj = {
-    id: 1,
-    username: "Jane",
-    dept: "Computers",
-
-    displayId(){
-        console.log("Id: " + this.id);
-        return this;
+function nameMaker(fname, lname) {
+  return {
+    fname,
+    lname,
+    fullname: '',
+    fullName(continental=false) {
+      if (continental) {
+        this.fullname = `${this.lname}, ${this.fname}`;
+      } else {
+        this.fullname = `${this.fname} ${this.lname}`;
+      }
+      return this;
     },
-    
-    displayName(){
-        console.log("Name: " + this.username);
-        return this;
+    upperCase() {
+      this.fname = this.fname.toUpperCase();
+      this.lname = this.lname.toUpperCase();
+      return this;
     },
-    
-    displayDept(dept){
-        if(typeof dept !== "undefined"){
-            this.dept = dept;
-        }
-        console.log("Dept: " + this.dept);
-        return this;
+    snakeCase() {
+      this.fname = this.fname ? `${this.fname[0].toUpperCase()}${this.fname.slice(1)}` : '';
+      this.lname = this.lname ? `${this.lname[0].toUpperCase()}${this.lname.slice(1)}` : '';
+      return this;
+    },
+    tee() {
+      console.log({ fname: this.fname, lname: this.lname, fullname: this.fullname });
+      return this;
     }
+  }
 }
 
 // driver code
-obj.displayId().displayName().displayDept("Info Tech");
+nameMaker("john", "appleseed").tee().snakeCase().tee().upperCase().tee();
+
+// { fname: 'john', lname: 'appleseed', fullname: '' }
+// { fname: 'John', lname: 'Appleseed', fullname: '' }
+// { fname: 'JOHN', lname: 'APPLESEED', fullname: '' }
 ```
 
 ###### Notes
