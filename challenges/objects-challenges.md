@@ -35,16 +35,31 @@
 - Recursive solution can be used to iterate over all the nested objects
 
 ```js
-function keyValuePrinter(obj){
-    for(let key in obj){
-        if(typeof obj[key] !== "object"){
-            console.log("[" + key + " : " + obj[key] + "]");
+function kvPrint(obj){
+    let strList = [];
+    for(let key in obj) {
+        if (typeof obj[key] !== "object") {
+            strList.push(`[${key} : ${obj[key]}]`);
         }
-        else{
-            keyValuePrinter(obj[key]);
+        else {
+          if (Array.isArray(obj[key])) {
+            strList.push(`[${key} : [${obj[key].join(", ")}]]`);
+          } else {
+            strList.push(`[${key} : ${kvPrint(obj[key])}]`);
+          }
         }
     }
+  return strList.join(", ");
 }
+
+kvPrint({
+  a: 1,
+  b: {
+    c: 2
+  },
+  d: [1,2],
+});
+// '[a : 1], [b : [c : 2]], [d : [1, 2]]
 ```
 
 <br />
@@ -56,16 +71,24 @@ function keyValuePrinter(obj){
 - Alternatively, a new object can be created and the prototype of the new object can be set as prototype of old object
 
 ```js
-for(let key in obj){
-    if(obj.hasOwnProperty(key)){
-        delete obj[key];
-    }
+function cleanObj(obj) {
+  for(let key in obj) {
+    Reflect.deleteProperty(obj, key);
+  }
+  return obj;
 }
 ```
 
 ```js
-const newObj = {};
-Object.setPrototypeOf(newObj, obj);
+cleanObj({
+  a: 1,
+  b: {
+    c: 2
+  },
+  d: [1,2]
+});
+
+// {};
 ```
 
 ###### Notes
