@@ -205,7 +205,7 @@ console.log({
 ```
 
 ###### Notes
-3rd solution provided does deep copy of a nested object also but this technique results in loss of data
+`shallowCopy3` provided does deep copy of a nested object also but this technique results in loss of data
 
 ###### References
 - https://www.digitalocean.com/community/tutorials/copying-objects-in-javascript
@@ -219,7 +219,30 @@ console.log({
 - Map can be initialized with key-value pairs
 
 ```js
-const map = new Map(Object.entries(obj));
+function mapify(obj) {
+  const entries = Object.entries(obj);
+  const map = new Map()
+  for(let idx in entries) {
+    map.set(entries[idx][0], entries[idx][1]);
+  }
+  return map;
+}
+
+// driver code
+const obj = {
+  a: 1,
+  b: {
+    c: 2
+  },
+  d: [3, 4]
+}
+
+mapify(obj) 
+// Map(3) {
+//   'a' => 1,
+//   'b' => { c: 2 },
+//   'd' => [ 3, 4 ],
+// }
 ```
 
 ###### References
@@ -237,34 +260,20 @@ const obj = { marks: 0 };
 
 Object.defineProperty(obj, 'marks', {
     set(value) {
-        if(value < 0)
+        if (value < 0) {
             throw new Error("Marks cant be less than zero");
-        marks = value;
+        } else {
+          marks = value;
+        }
     },
     get() {
         return marks;
     }
 });
+
+obj.marks = -2 // Error: Marks cant be less than zero
+obj.marks = 2 // { marks: 2]
 ```
-
-```js
-const obj = {
-    _marks: 0,
-
-    set marks(value){
-        if(value < 0)
-            throw new Error("Marks cant be less than zero");
-        this._marks = value;
-    },
-
-    get marks(){
-        return this._marks;
-    }
-}
-```
-
-###### Notes
-2nd solution shown directly defines `getter` and `setter` for property marks, hence uses another variable to store the data
 
 ###### References
 - https://javascript.info/property-accessors
