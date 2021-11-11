@@ -102,15 +102,105 @@ cleanObj({
 - Deep copy is done by copying all the properties of the object to another object
 
 ```js
-const x = Object.assign({}, obj);
+const shallowCopy1 = obj => Object.assign({}, obj);
+const shallowCopy2 = obj => ({...obj});
+const shallowCopy3 = obj => JSON.parse(JSON.stringify(obj)); // Not really deep if your obj has function members too
 ```
 
 ```js
-const x = { ...obj};
+function cloneArray(arr) {
+  let retArr = [];
+  for(let mem in arr) {
+    if (Array.isArray(arr[mem])) {
+      retArr.push(cloneArray(arr[mem]));
+    } else if (typeof arr[mem] === 'object') {
+      retArr.push(deepCopy(arr[mem]));
+    } else {
+      retArr.push(arr[mem]);
+    }
+  }
+  return retArr;
+}
+function deepCopy(obj) {
+  let retObj = {};
+  for(let key in obj) {
+    if (typeof obj[key] === 'object') {
+      if (Array.isArray(obj[key])) {
+        retObj[key] = cloneArray(obj[key]);
+      } else {
+        retObj[key] = deepCopy(obj[key]);
+      }
+    } else {
+      retObj[key] = obj[key];
+    }
+  }
+  return retObj;
+}
 ```
 
 ```js
-const x = JSON.parse(JSON.stringify(obj));
+// driver code
+const obj = {
+  a: 1,
+  b: { 
+    c : 2
+  },
+  d: [3, 4],
+  e: [[5], [6]],
+  f: () => {},
+};
+let s1 = shallowCopy1(obj);
+let s2 = shallowCopy2(obj);
+let s3 = shallowCopy3(obj);
+let d1 = deepCopy(obj);
+
+obj.a = 2
+obj.b.c = 5
+obj.d[1] = 9
+obj.e[0][0] = 7
+
+console.log({ 
+  obj, 
+  s1,
+  s2,
+  s3,
+  d1
+});
+
+//   obj: {
+//     a: 2,
+//     b: { c: 5 },
+//     d: [ 3, 9 ],
+//     e: [ [ 7 ], [ 6 ] ],
+//     f: ƒ f()
+//   },
+//   s1: {
+//     a: 1,
+//     b: { c: 5 },
+//     d: [ 3, 9 ],
+//     e: [ [ 7 ], [ 6 ] ],
+//     f: ƒ f()
+//   },
+//   s2: {
+//     a: 1,
+//     b: { c: 5 },
+//     d: [ 3, 9 ],
+//     e: [ [ 7 ], [ 6 ] ],
+//     f: ƒ f()
+//   },
+//   s3: {
+//     a: 1,
+//     b: { c: 2 },
+//     d: [ 3, 4 ],
+//     e: [ [ 5 ], [ 6 ] ]
+//   },
+//   d1: {
+//     a: 1,
+//     b: { c: 2 },
+//     d: [ 3, 4 ],
+//     e: [ [ 5 ], [ 6 ] ],
+//     f: ƒ f()
+//   }
 ```
 
 ###### Notes
