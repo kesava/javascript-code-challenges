@@ -582,14 +582,11 @@ const SimplePubSub = (() => {
   const subscribers = new Map();
   
   function subscribe(eventName, callback) {
-    if (subscribers.get(eventName)) {
-      const currentSubs = subscribers.get(eventName);
-      currentSubs.push(callback)
-      subscribers.set(eventName, currentSubs);
-    } else {
-      subscribers.set(eventName, [callback]);
-    }
+    const currentSubs = subscribers.get(eventName) || [];
+    currentSubs.push(callback);
+    subscribers.set(eventName, currentSubs);
   }
+  
   function publish(eventName, ...args) {
     if (subscribers.get(eventName)) {
       subscribers.get(eventName).forEach(subscriber => subscriber.apply(null, args))
