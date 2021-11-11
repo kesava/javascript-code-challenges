@@ -19,7 +19,6 @@ The questions are from fork, but I have attempted my own solutions.
 
 - Objects
 
-  - [Concepts](./challenges/objects-concepts.md#home)
   - [Challenges](./challenges/objects-challenges.md#home)
 
 - Collections
