@@ -18,12 +18,9 @@
 1. [Design a class for employee which takes id and name in during construction of object and has a salary property](#Q12)
 1. [Write a program to make all the properties of an object ready only but allow the addition of new properties](#Q13)
 1. [Write a program which can return a boolean if value is present in the range with given start and end values in an object](#Q14)
-1. [Write a function which accepts a topic and a list of related tags to store the information. The same function should return all the topics when requested with a tagname](#Q15)
 1. [Write a function which accepts a collection of values & an iteratee as arguments and returns a grouped object](#Q16)
 1. [Create a constructor function which allows its functions present on prototype to be accessed only by the objects created by calling it](#Q17)
 1. [Design a utility on an array of objects where the access can be made to the object using index (as usual) and also from primary key of the object](#Q18)
-1. [Write a function which receives an object and returns a true if the object has circular reference](#Q19)
-1. [Write a code which can eliminate circular references in an object (Cyclic reference in an object)](#Q20)
 1. [Provide an object on which a value can be set to nested property even if it does not exist](#Q21)
 
 ---
@@ -675,71 +672,26 @@ const r1 = makeRangeCheckWithoutArray(4, 10);
 
 <br />
 
-#### Q15
-### Write a function which accepts a topic and a list of related tags to store the information. The same function should return all the topics when requested with a tagname
-```js
-// Example
-const tagManager = TagManager();
-tagManager.addTags('React', 'Redux, JSX, JavaScript, VDOM');
-tagManager.addTags('Angular', 'RxJS, TypeScript, JavaScript');
-tagManager.addTags('Vue', 'VDOM, JavaScript');
-
-tagManager.getTopics.getTopics('VDOM');             // React, Vue
-tagManager.getTopics.getTopics('JavaScript');       // React, Angular, Vue
-```
-
-- The tags can be stored as keys and array of topics as values in a map
-- Function module can be desgined to expose 'addTags' and 'getTopics' by tagname
-
-```js
-function TagManager() {
-    const map = new Map();
-
-    function addTags(topic, tagText) {
-        const tagsArr = tagText.split(',').map(tag => tag.trim());
-
-        tagsArr.forEach(tag => {
-            if (map.has(tag)) {
-                map.get(tag).push(topic);
-            } else {
-                map.set(tag, [topic]);
-            }
-        });
-    }
-
-    function getTopics(tag) {
-        return map.get(tag);
-    }
-
-    return {
-        addTags,
-        getTopics
-    }
-}
-```
-
-<br />
-
 #### Q16
 ### Write a function which accepts a collection of values & an iteratee as arguments and returns a grouped object
 ```js
 // Example
 groupBy([6.1, 4.2, 6.3], Math.floor);               // { 6: [6.1, 6.3], 4: [4.2] }
-groupBy(['one', 'two', 'three'], 'length');         // { 3: ['one', 'two'], 5: ['three'] }
+groupBy(['one', 'two', 'three'], x => x.length');         // { 3: ['one', 'two'], 5: ['three'] }
 ```
 
-- As the 2nd argument is either a functin or property, the iteratee  can be perfrom accordingly on the value of arrays
 - An empty object can be created and used to push the values of array to respective property of the iteratee output
 
 ```js
-function groupBy(values, iteratee) {
-    const obj = {};
-    for (let value of values) {
-        const prop = typeof iteratee === 'function' ? iteratee(value) : value[iteratee];
-        prop in obj ? obj[prop].push(value) : (obj[prop] = [value]);
-    }
-
-    return obj;
+function groupBy(collection, predicate) {
+  const output = {};
+  let tmp;
+  if (typeof predicate !== 'function') return {};
+  for(let val of collection) {
+    tmp = predicate.apply(null, [val]);
+    output[tmp] ? (output[tmp].push(val)) : (output[tmp] = [val]);
+  }
+  return output;
 }
 ```
 
@@ -782,107 +734,34 @@ ProtectedFunction.prototype.method.call(obj);           // Incompatible object!
 ### Design a utility on an array of objects where the access can be made to the object using index (as usual) and also from primary key of the object
 ```js
 // Example
-const employees = [
-    { name: 'John', id: '1' },
-    { name: 'Jane', id: '2' },
-    { name: 'Pai', id: '0' },
+const coll = [
+  {name: 'John', id: '1'},
+  {name: 'Paul', id: '2'},
+  {name: 'George', id: '3'},
+  {name: 'Ringo', id: '4'}
 ];
-
-flexEmployees[0]              // { name: 'John', id: '1' }
-flexEmployees['Pai']          // { name: 'Pai', id: '0' }
-flexEmployees['doe']          // undefined
+const o1 = makeSearchableByPrimaryKey(coll, 'name');
+o1['Paul'] // { name: 'Paul', id: '2' }
+o1[3] // { name: 'Ringo', id: '4' }
+o1[5] // undefined
 ```
 
 - The access to the index happens for arrays by default and the Proxy can be setup to enable the fetching of object using primary key (any other key can also be coded)
 
 ```js
-const flexEmployees = new Proxy(employees, {
-    get(target, handler) {
-        if (handler in target) {
-            return target[handler];
-        } else if (typeof handler === 'string') {
-            return target.find(obj => obj.name === handler);
-        } else {
-            return undefined;
-        }
-    },
-});
-```
-
-<br />
-
-#### Q19
-### Write a function which receives an object and returns a true if the object has circular reference
-```js
-// Example
-var circularReferenceObj = { data: 123 };
-circularReferenceObj.myself = circularReferenceObj;
-```
-
-- Stringification of an object having circular references will throw error
-
-```js
-function doesObjectHaveCircularRef(obj){
-    try{
-        JSON.stringify(circularReference);
-        return false;
+function makeSearchableByPrimaryKey(arr, pKey) {
+  const handler = {
+    get: function(target, prop) {
+      if (prop in target) {
+        return target[prop];
+      } else if (typeof prop === 'string') {
+        return arr.find(x => x[pKey] === prop);
+      }
     }
-    catch{
-        return true;
-    }
+  }
+  return new Proxy(arr, handler);
 }
 ```
-
-###### References
-- https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Cyclic_object_value
-
-<br />
-
-#### Q20
-### Write a code which can eliminate circular references in an object (Cyclic reference in an object) 
-
-- Circular / cyclic reference exists when the object property value forms a cycle
-- The circular references can be eliminated by passing a function to take care of circular references during stringification
-- The circular references can be also be eliminated by setting the such property value to null on the object itself
-
-```js
-const getCircularReplacer = () => {
-    const seen = new WeakSet();
-    return (key, value) => {
-        if (typeof value === 'object' && value !== null) {
-            if (seen.has(value)) {
-                return;
-            }
-            seen.add(value);
-        }
-        return value;
-    };
-};
-
-JSON.stringify(circularReferenceObj, getCircularReplacer());
-```
-
-```js
-function removeCircularRef(obj) {
-    const set = new WeakSet([obj]);
-
-    (function iterateObj(obj = circularReference) {
-        for (let key in obj) {
-            if (obj.hasOwnProperty(key)) {
-                if (typeof obj[key] === 'object')
-                    if (set.has(obj[key])) delete obj[key];
-                    else {
-                        set.add(obj[key]);
-                        iterateObj(obj[key]);
-                    }
-            }
-        }
-    })();
-}
-```
-
-###### Notes
-`circularReferenceObj` is assumed to be an object with cyclic reference
 
 <br />
 
