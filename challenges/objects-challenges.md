@@ -19,7 +19,6 @@
 1. [Write a program to make all the properties of an object ready only but allow the addition of new properties](#Q13)
 1. [Write a program which can return a boolean if value is present in the range with given start and end values in an object](#Q14)
 1. [Write a function which accepts a collection of values & an iteratee as arguments and returns a grouped object](#Q16)
-1. [Create a constructor function which allows its functions present on prototype to be accessed only by the objects created by calling it](#Q17)
 1. [Design a utility on an array of objects where the access can be made to the object using index (as usual) and also from primary key of the object](#Q18)
 1. [Provide an object on which a value can be set to nested property even if it does not exist](#Q21)
 1. [Provide a path lookup for nested objects](#Q22)
@@ -698,36 +697,6 @@ function groupBy(collection, predicate) {
 
 ###### References
 - https://lodash.com/docs/4.17.15#groupBy
-
-<br />
-
-#### Q17
-### Create a constructor function which allows its functions present on prototype to be accessed only by the objects created by calling it
-
-- The list of objects created by the function can be kept in track using a collection object inside function
-- `Weakset` can be a prefered way to use as collection for objects created through it as the dereferencing the object helps in garbage collection
-- A context validation within prototype method can be set if the object is created by the function itself or not
-
-```js
-function ProtectedFunction() {
-    const objectCollection = new WeakSet();
-    objectCollection.add(this);
-
-    if (!ProtectedFunction.prototype.method) {
-        ProtectedFunction.prototype.method = function () {
-            if (!objectCollection.has(this)) throw new TypeError('Incompatible object!');
-            return 'Access granted';
-        };
-    }
-}
-
-// driver code
-const protectedObj = new ProtectedFunction();
-protectedObj.method();                                  // Access granted
-
-const obj = {};
-ProtectedFunction.prototype.method.call(obj);           // Incompatible object!
-```
 
 <br />
 
