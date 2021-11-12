@@ -100,28 +100,24 @@ XHR is used mainly in AJAX programming
 
 ```js
 function asyncResolveFunc() {
-    function resolver(resolve, reject) {
-        resolve('Success');
-    }
-    return new Promise(resolver);
+  function resolver(resolve, reject) {
+    resolve('Success')
+  }
+  return new Promise(resolver);
 }
 
 function asyncRejectFunc() {
-    function resolver(resolve, reject) {
-        reject('Failure');
-    }
-    return new Promise(resolver);
+  function rejector(resolver, reject) {
+    reject('Failure');
+  }
+  return new Promise(rejector);
 }
 
-// driver code
 const promiseSuccess = asyncResolveFunc();
 const promiseFailure = asyncRejectFunc();
 
-// Succeeded promise .then executes first function passed as argument
-promiseSuccess.then((successData) => { console.log(successData); }, (failureData) => { console.log(failureData); });
-
-// Failed promise .then executes second function passed as argument
-promiseFailure.then((successData) => { console.log(successData); }, (failureData) => { console.log(failureData); });
+promiseSuccess.then((...sargs) => console.log({ sargs }), (...fargs) => console.log({ fargs })); // { sargs: [ 'Success' ] }
+promiseFailure.then((...sargs) => console.log({ sargs }), (...fargs) => console.log({ fargs })); // { fargs: [ 'Failure' ] }
 ```
 
 ###### Notes
