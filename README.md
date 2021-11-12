@@ -23,7 +23,6 @@ The questions are from fork, but I have attempted my own solutions.
 
 - Collections
 
-  - [Concepts](./challenges/collections-concepts.md#home)
   - [Challenges](./challenges/collections-challenges.md#home)
 
 - Asynchronousity
