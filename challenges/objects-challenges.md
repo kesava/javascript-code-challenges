@@ -648,25 +648,29 @@ console.log({ o1, o2 });
 
 #### Q14
 ### Write a program which can return a boolean if value is present in the range with given start and end values in an object
-```js
-// Example
-let range = {
-  start: 10,
-  end: 50
-};
-
-5 in range;             // false
-25 in range;            // true
-```
 
 - The object `in` can be trapped using Proxy trap `has`, to check if the value is in the range or not
 
 ```js
-range = new Proxy(range, {
-    has(target, value){
-        return value >= target.start && value <= target.end;
+function makeRangeCheckWithoutArray(start, end) { // start <= end
+  const handler = {
+    has: function(target, prop) {
+      if ((prop >= start) && (prop <= end)) {
+        return true;
+      } else {
+        return false;
+      }
     }
-});
+  }
+  return new Proxy({
+    start,
+    end
+  }, handler);
+}
+
+const r1 = makeRangeCheckWithoutArray(4, 10);
+5 in r1 // true
+15 in r1 // false
 ```
 
 <br />
