@@ -471,13 +471,11 @@ function makeArrayLikeObj() {
     return new Proxy({
       push(elem) {
         retObj[idx++] = elem;
-        console.log({ retObj })
         return this;
       },
       pop() {
         const temp = retObj[String(--idx)];
-        Reflect.deleteProperty(retObj, String(idx))
-        console.log({ retObj, temp });
+        Reflect.deleteProperty(retObj, String(idx));
         return temp;
       },
      *[Symbol.iterator]() {
@@ -500,11 +498,11 @@ arr.length // 2
 for(let i of arr) {
   console.log(i) // 2, 8
 } 
-[...arr] // [2, 8]                             // { length: 1, 0: first } 
+[...arr] // [2, 8]                             
 ```
 
 ###### Notes
-As the context for array methods is set object, length of the object changes whenever `push` and `pop` operations take place
+* This array like object supports - `.length`, `.push()`, and `.pop()` methods. It also behaves like a spread operator collection.
 
 <br />
 
