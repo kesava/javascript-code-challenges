@@ -615,22 +615,31 @@ Class in JavaScript is functionality to achieve class based model on top of prot
 - The exisiting properties of the object can be made read only with `set` keyword using Proxy
 
 ```js
-const readOnlyObj = new Proxy(obj, {
-    get: function (target, key) {
-        return target[key];
+function makeObjReadOnly(obj) {
+  return new Proxy(obj, {
+    get: function(target, prop) {
+      return target[prop];
     },
-    
-    set: function() {
-        if(target.hasOwnProperty(key)){
-            throw new Error("Object properties are read only");
-        }
-        target[key] = value;
+    set: function(target, prop, value) {
+      if (Reflect.ownKeys(target).includes(prop)) {
+       throw new Error("Object properties are read-only");
+      } else {
+        target[prop] = value;
+      }
     }
-});
+  });
+}
+const o1 = { a: 1, b: 2};
+
+const o2 = makeObjReadOnly(o1);
+console.log({ o1, o2 });
+// o2.a = 3;
+o2.c = 3
+console.log({ o1, o2 });
 ```
 
 ###### Notes
-If condition takes care whether the property is new or existing to handle the read only scenario
+`if` condition takes care whether the property is new or existing to handle the read only scenario
 
 ###### References
 - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/entries
