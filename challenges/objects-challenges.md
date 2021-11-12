@@ -15,7 +15,6 @@
 1. [Create an object with property counter which keeps incrementing on every access](#Q9)
 1. [Create an object and make it behave like an array which allows push and pop operations on items](#Q10)
 1. [Write a function which can be used to deeply compare 2 nested objects](#Q11)
-1. [Design a class for employee which takes id and name in during construction of object and has a salary property](#Q12)
 1. [Write a program to make all the properties of an object ready only but allow the addition of new properties](#Q13)
 1. [Write a program which can return a boolean if value is present in the range with given start and end values in an object](#Q14)
 1. [Write a function which accepts a collection of values & an iteratee as arguments and returns a grouped object](#Q16)
@@ -555,54 +554,6 @@ Stringification of both objects and comparision will also work, but fails on key
 
 ###### References
 - https://dmitripavlutin.com/how-to-compare-objects-in-javascript/
-
-<br />
-
-#### Q12
-### Design a class for employee which takes id and name in during construction of object and has a salary property
-
-- Classes are a template for creating objects. They encapsulate data with code to work on that data
-- The constructor method is a special method for creating and initializing an object created with a class
-- Objects of the class can be created using `new` keyword followed by classname
-
-```js
-class Employee {
-    constructor(id, name) {
-        if (typeof id !== 'undefined' && typeof name !== 'undefined') {
-            this.id = id;
-            this.name = name;
-        } else
-            throw new Error('Employee id and name are mandatory for new employee creation');
-    }
-
-    getId() {
-        return this.id;
-    }
-
-    getName() {
-        return this.name;
-    }
-
-    setSalary(base, variable) {
-        this.salary = base + variable;
-    }
-
-    getSalary() {
-        return this.salary;
-    }
-}
-
-// driver code
-const emp = new Employee(1, "John Doe");
-emp.setSalary(10000, 1000);
-emp.getSalary();                            // 11000
-```
-
-###### Notes
-Class in JavaScript is functionality to achieve class based model on top of prototype based programming model of JavaScript 
-
-###### References
-- https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes
 
 <br />
 
