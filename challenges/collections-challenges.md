@@ -46,7 +46,7 @@ for(let i in obj) {
   console.log(i) // 'a', 'b', 'c'
 }
 for(let i of makeIterator(obj)) {
-  console.log(i) // 1, 2, 3
+  console.log(i) // [ 'a', 1 ], [ 'b', 2 ], [ 'c', 3 ]
 }
 ```
 
