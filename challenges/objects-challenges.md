@@ -22,6 +22,7 @@
 1. [Create a constructor function which allows its functions present on prototype to be accessed only by the objects created by calling it](#Q17)
 1. [Design a utility on an array of objects where the access can be made to the object using index (as usual) and also from primary key of the object](#Q18)
 1. [Provide an object on which a value can be set to nested property even if it does not exist](#Q21)
+1. [Provide a path lookup for nested objects](#Q22)
 
 ---
 
@@ -773,22 +774,73 @@ function makeSearchableByPrimaryKey(arr, pKey) {
 - `get` trap of proxy can be used to create the objects dynamically and set the value
 
 ```js
-function ProxyObject(obj) {
-    return new Proxy(obj, {
-        get: (target, property) => {
-            if (!(property in target)) {
-                target[property] = new ProxyObject({});
-            }
-            return target[property];
-        },
-    });
+function setNestedObject(obj) {
+  const handler = {
+    get: function(target, prop) {
+      if (prop in target) {
+        return target[prop];
+      } else {
+        target[prop] = setNestedObject({});
+        return target[prop];
+      }
+    }
+  }
+  return new Proxy(obj, handler);
 }
 
 // driver code
-const obj = new ProxyObject({});
-obj.x.y.z = 'nested value';
+const obj = {a: 1};
+const o1 = setNestedObject(obj);
+o1.b.c = 3
 
-obj.x.y.z;                      // nested value
+o1.b.c // 3
+```
+
+<br />
+
+#### Q22
+### Provide a path lookup to a nested object. 
+
+- The nested lookup works by splitting the lookup path and recursing on the lookup.
+
+```js
+function makeLookupObj(obj) {
+  const handler = {
+    get: function(target, prop) {
+      const lookups = prop.split('.');
+      if (lookups.length === 1) {
+        return target[lookups[0]];
+      } else {
+        console.log({ lookups, d: target[lookups[0]], e: lookups.slice(1).join(".") })
+        if (typeof target[lookups[0]] === 'object') {
+          return makeLookupObj(target[lookups[0]])[lookups.slice(1).join(".")]
+        } else if ((target[lookups[0]] !== undefined) && lookups.length === 1) {
+          return target[lookups[0]];
+        } else {
+          return undefined;
+        }
+      }
+    }
+  }
+  return new Proxy(obj, handler);
+}
+
+
+// driver code
+const obj = {
+  a: 1,
+  b: {
+    c: {
+      d: 1
+    }
+  },
+  e: 5,
+}
+
+const o1 = makeLookupObj(obj);
+o1['b.c'] // {d: 1}
+o1['b.c.d'] // 1
+o1['b.c.d.e'] // undefined
 ```
 
 <br />
