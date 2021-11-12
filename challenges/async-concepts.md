@@ -135,19 +135,18 @@ Once the promise is resolved or rejected, status will not change
 - Function can take delay as argument and return a promise which gets resolved after timeout is complete
 
 ```js
-function setTimeoutPromise(delay) {
-    function resolver(resolve) {
-        setTimeout(resolve, delay);
-    }
-    return new Promise(resolver);
+function setTimeoutPromisfy(delay) {
+  function helper(resolve, reject) {
+    console.log(`Task begun at: ${new Date()}`);
+    setTimeout(resolve, delay);
+  }
+  
+  return new Promise(helper);
 }
 
 // driver code
-console.log('Task started');
-const timeoutPromise = setTimeoutPromise(3000);
-timeoutPromise.then(() => {
-    console.log('Task completed');
-});
+const t1 = setTimeoutPromisfy(5000); // 'Task begun at: Fri Nov 12 2021 15:48:08 GMT-0800 (Pacific Standard Time)'
+t1.then(() => console.log(`Task completed at: ${new Date()}`)); // 'Task completed at: Fri Nov 12 2021 15:48:13 GMT-0800 (Pacific Standard Time)'
 ```
 
 
