@@ -268,12 +268,16 @@ controller.abort();
 async function asyncAwaitFunc() {
     try {
         console.log('Executes normally when invoked');
-        await promiseReturningFunc();
+        await fetchPolyfill("https://reqbin.com/echo/get/json")
+  .then(data => console.log({ r: JSON.parse(data) }))
+  .catch(err => console.log(err));
         console.log('Continues the execution after promise resolution');
     } catch (err) {
         console.log('Error occured: ' + err);
     }
 }
+
+asyncAwaitFunc();
 ```
 
 ###### Notes
