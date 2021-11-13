@@ -28,21 +28,11 @@
 #### Q1
 ### Print "Hello, world" with a delay of 3 seconds
 
-- setTimeout takes a function as the 1st argument and optional timeout delay & list of values as the function parameters
 - setTimeout returns an id (number) which can be used to stop the setTimeout using clearTimeout function
 
-```js
-setTimeout(function (text) {
-    console.log(text);
-}, 3000, 'Hello, World');
-```
 
 ```js
 setTimeout(() => console.log('Hello, World'), 3000);
-```
-
-```js
-setTimeout(console.log, 3000, 'Hello, World');
 ```
 
 ###### Notes
@@ -57,20 +47,15 @@ Zero or more values that represent any parameters you want to pass to the functi
 ### Create a function which receives a function as argument and executes it after 2 seconds
 
 ```js
-function callbackExec(callback) {
+function execCallback(callback, delay=2000) {
   if (typeof callback === 'function') {
-      setTimeout(() => {
-          callback();
-          console.log('Callback is executed after 2 seconds');
-    }, 2000);
+    setTimeout(() => callback(), delay);
+  } else {
+    console.log('the argument is not a function')
   }
 }
 
-function displayHello() {
-    console.log('Hello');
-}
-
-callbackExec(displayHello);
+execCallback(() => console.log('well'));
 ```
 
 <br />
@@ -87,7 +72,7 @@ for (let i = num1; i <= num2; i++) {
 
 ```js
 const num1 = 1, num2 = 10;
-+function displayWithDelay(i){
+function displayWithDelay(i){
     console.log(i);
     if(i !== num2)
         setTimeout(displayWithDelay, 1000, ++i);
