@@ -324,12 +324,14 @@ function makeIterator(array) {
           value: array[index++],
         }
       }
-    }
+    },
+    [Symbol.iterator]: function() { return this; },
   }
 }
 
 // driver code
 const it = makeIterator([3, 4, 5]);
+[...it] // [3,4,5]
 it.next()
 it.next()
 it.next()
